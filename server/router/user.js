@@ -49,15 +49,15 @@ router.get('/', (req, res) => {
 // Find all customers 
 router.get('/customers',
     (req, res) => {
-        const userId; // get from jwt token in req
+        // const userId; // get from jwt token in req
         const skip = req.query.start || 0;
         const limit = req.query.size || 20;
 
         client.db('fitness').collection('customers').find(
             {
                 $and: [
-                    { user_id: userId },
-                    { deleted: false },
+                    // { user_id: userId || null},
+                    { deleted: false }
                 ]
             })
             .skip(skip)
@@ -91,7 +91,7 @@ router.post('/customer', urlencoded,
 
         client.db('fitness').collection('customers').insertOne({
             name: body.name,
-            user_id: body.user_id,
+            user_id: body.user_id,  // this should get from JWT
             height: body.height,
             age: body.age,
             gender: body.gender,
@@ -101,6 +101,7 @@ router.post('/customer', urlencoded,
             images: []
         })
             .then(result => {
+                console.info('Add customer result: ', result.ops);
                 res.status(201).json({
                     message: 'new customer added',
                     url: req.originalUrl,
@@ -161,13 +162,13 @@ router.put('/customers/:custId', urlencoded,
 router.delete('/customers/:custId',
     (req, res) => {
         const custId = req.params.custId;
-        const userId; // get from jwt token in req
+        // const userId; // get from jwt token in req
 
         client('fitness').collection('customers').updateOne(
             {
                 $and: [
                     { _id: ObjectId(recordId) },
-                    { user_id: userId },
+                    // { user_id: userId },
                     { deleted: false }
                 ]
             },
@@ -189,8 +190,6 @@ router.delete('/customers/:custId',
                     status: 500
                 })
             })
-    }
-)
     }
 )
 

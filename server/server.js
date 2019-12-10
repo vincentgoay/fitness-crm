@@ -25,8 +25,8 @@ app.use(morgan('tiny'));
 // login router - handle all login requests
 app.use('/auth', auth)
 
-// handle all user request
-app.use('/users', user.router)     // TODO: Check credential before allowing access
+// handle all protected request
+app.use('/protected', user.router)     // TODO: Check credential before allowing access
 
 // handle all member request
 // app.use('/members', member)
