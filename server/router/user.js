@@ -91,7 +91,7 @@ router.post('/customer', urlencoded,
 
         client.db('fitness').collection('customers').insertOne({
             name: body.name,
-            user_id: body.user_id,  // this should get from JWT
+            username: body.user_id,  // this should get from JWT
             height: body.height,
             age: body.age,
             gender: body.gender,

@@ -1,6 +1,7 @@
 //-----------------------------
 // Load Libraries
 //-----------------------------
+const cors = require('cors');
 const morgan = require('morgan');
 const express = require('express');
 
@@ -17,6 +18,7 @@ const app = express();
 
 // Setup standard middleware
 app.use(morgan('tiny'));
+app.use(cors());
 
 //-----------------------------
 // Router rules
