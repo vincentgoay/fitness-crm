@@ -1,9 +1,14 @@
 //-----------------------------
 // Load Libraries
 //-----------------------------
+const fs = require('fs');
+const imageType = require('image-type');
+const http = require('request-promise');
 const mysql = require('mysql');
 const MongoClient = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectID;
+const multer = require('multer');
+const AWS = require('aws-sdk');
 const express = require('express');
 const router = express.Router();
 
@@ -16,6 +21,9 @@ const db = require('../utils/mysql_utils');
 // Body Parser
 const urlencoded = express.urlencoded({ extended: true });
 
+// Multer
+const uploadPhoto = multer({ dest: __dirname + '/tmp' });
+
 // MySQL
 const pool = mysql.createPool(config.mysql);
 
@@ -27,6 +35,14 @@ const findUser = db.mkQueryFromPool(db.mkQuery(FIND_USER), pool);
 
 // Mongo Client
 const client = new MongoClient(config.mongodb.url, { useUnifiedTopology: true });
+
+// AWS S3
+const endpoint = new AWS.Endpoint(config.s3.endpoint);
+const s3 = new AWS.S3({
+    endpoint: endpoint,
+    accessKeyId: config.s3.accessKeyId || process.env.S3_ACCESS_KEY,
+    secretAccessKey: config.s3.secretAccessKey || process.env.S3_SECRET_ACCESS_KEY
+})
 
 //-----------------------------
 // Router rules
@@ -91,9 +107,9 @@ router.post('/customer', urlencoded,
 
         client.db('fitness').collection('customers').insertOne({
             name: body.name,
-            username: body.user_id,  // this should get from JWT
-            height: body.height,
-            age: body.age,
+            username: body.user_id || 'vincent_dummy',  // this should get from JWT
+            height: parseFloat(body.height),
+            birth_year: parseInt(body.birth_year),
             gender: body.gender,
             phone: body.phone,
             deleted: false,
@@ -125,18 +141,21 @@ router.put('/customers/:custId', urlencoded,
         const body = req.body;
         const now = new Date();
 
+        console.info('Put customer id: ', custId)
+        console.info('Put customer: ', body)
+
         client.db('fitness').collection('customers').updateOne(
             {
                 $and: [
-                    { _id: ObjectId(custId) },
-                    { user_id: userId }
+                    { _id: ObjectId(custId) }
+                    // { user_id: userId }
                 ]
             },
             {
                 $set: {
                     name: body.name,
-                    height: body.height,
-                    age: body.age,
+                    height: parseFloat(body.height),
+                    birth_year: parseInt(body.birth_year),
                     gender: body.gender,
                     phone: body.phone
                 }
@@ -164,10 +183,10 @@ router.delete('/customers/:custId',
         const custId = req.params.custId;
         // const userId; // get from jwt token in req
 
-        client('fitness').collection('customers').updateOne(
+        client.db('fitness').collection('customers').updateOne(
             {
                 $and: [
-                    { _id: ObjectId(recordId) },
+                    { _id: ObjectId(custId) },
                     // { user_id: userId },
                     { deleted: false }
                 ]
@@ -176,14 +195,14 @@ router.delete('/customers/:custId',
                 $set: { deleted: true }
             })
             .then(result => {
-                console.info(`>>> delete ${recordId} count: `, result.modifiedCount);
+                console.info(`>>> delete ${custId} count: `, result.modifiedCount);
                 res.status(200).json({
                     message: 'deleted',
                     url: req.originalUrl,
                     status: 200
                 })
             }).catch(err => {
-                console.error(`>>> delete ${recordId} error: `, err);
+                console.error(`>>> delete ${custId} error: `, err);
                 res.status(500).json({
                     message: 'delete error',
                     url: req.originalUrl,
@@ -197,21 +216,77 @@ router.delete('/customers/:custId',
 router.get('/customers/:custId',
     (req, res) => {
         const custId = req.params.custId;
-        const skip = req.query.start || 0;
-        const limit = req.query.size || 10;
 
-        client.db('fitness').collection('records').find(
-            {
-                $and: [
-                    { cust_id: custId },
-                    { deleted: false }
-                ]
+        const getRecords = (param) => {
+            return (
+                client.db('fitness').collection('records').aggregate(
+                    [
+                        {
+                            $match: {
+                                $and: [
+                                    { cust_id: param },
+                                    { deleted: false }
+                                ]
+                            }
+                        },
+                        {
+                            $sort: {
+                                recorded_date: -1
+                            }
+                        }
+                    ])
+                    .toArray()
+            )
+        }
+
+        const getCustomer = (param) => {
+            return (
+                client.db('fitness').collection('customers').aggregate(
+                    [
+                        {
+                            $match: {
+                                $and: [
+                                    { _id: ObjectId(param) },
+                                    { deleted: false }
+                                ]
+                            }
+                        }
+                    ])
+                    .toArray()
+            )
+        }
+
+        Promise.all([getCustomer(custId), getRecords(custId)])
+            .then(results => {
+                if (!results[0].length)
+                    return res.status(404).json({
+                        message: 'not found',
+                        url: req.originalUrl,
+                        status: 404
+                    })
+
+                const customer = results[0][0];
+                console.log('customer: ', customer);
+
+                const records = results[1];
+                console.log('records: ', records);
+                customer['records'] = records;
+
+                res.status(200).json(customer);
             })
-            .sort({
-                updated_on: 1   // ascending
+            .catch(err => {
+                res.status(500).json({
+                    message: 'retrieve error',
+                    url: req.originalUrl,
+                    status: 500
+                })
             })
-            .skip(skip)
-            .limit(limit)
+    }
+)
+
+router.get('/records',
+    (req, res) => {
+        client.db('fitness').collection('records').find()
             .toArray()
             .then(result => {
                 if (!result.length)
@@ -220,7 +295,6 @@ router.get('/customers/:custId',
                         url: req.originalUrl,
                         status: 404
                     })
-                console.info(`CustId(${custId}) records: `, result);
                 res.status(200).json(result);
             })
             .catch(err => {
@@ -234,24 +308,26 @@ router.get('/customers/:custId',
 )
 
 // Insert new record for a customer by id
-router.post('/:custId/record', urlencoded,
+router.post('/record', urlencoded,
     (req, res) => {
-        const custId = req.params.custId;
         const body = req.body;
+        const custId = body.cust_id;
         const now = new Date();
 
+        console.log('New Records Body: ', body);
         client.db('fitness').collection('records').insertOne(
             {
                 cust_id: custId,
-                weight: body.weight,
-                fat_percentage: body.fat_percentage,
-                visceral_fat: body.visceral_fat,
-                bmi: body.bmi,
-                metabolism: body.metabolism,
-                muscle_percentage: body.muscle_percentage,
-                body_age: body.body_age,
+                weight: parseFloat(body.weight),
+                fat_percentage: parseFloat(body.fat_percentage),
+                visceral_fat: parseFloat(body.visceral_fat),
+                bmi: parseFloat(body.bmi),
+                metabolism: parseInt(body.metabolism),
+                muscle_percentage: parseFloat(body.muscle_percentage),
+                body_age: parseInt(body.body_age),
+                carotenoid: parseInt(body.carotenoid),
                 updated_on: now,
-                recorded_date: body.recorded_date,
+                recorded_date: Date(body.recorded_date),
                 deleted: false
             }
         ).then(result => {
@@ -279,18 +355,13 @@ router.get('/records/:id', (req, res) => {
             _id: ObjectId(recordId)
         })
         .then(result => {
-            if (!result.length)
+            if (result == null)
                 return res.status(404).json({
                     message: 'not found',
                     url: req.originalUrl,
                     status: 404
                 })
-
-            res.status(200).json({
-                message: 'find one',
-                url: req.originalUrl,
-                status: 200
-            })
+            res.status(200).json(result);
         }).catch(err => {
             console.error(`>>> delete ${recordId} error: `, err);
             res.status(500).json({
@@ -312,16 +383,15 @@ router.put('/records/:id', urlencoded,
             { _id: ObjectId(recordId) },
             {
                 $set: {
-                    weight: body.weight,
-                    fat_percentage: body.fat_percentage,
-                    visceral_fat: body.visceral_fat,
-                    bmi: body.bmi,
-                    metabolism: body.metabolism,
-                    muscle_percentage: body.muscle_percentage,
-                    body_age: body.body_age,
+                    weight: parseFloat(body.weight),
+                    fat_percentage: parseFloat(body.fat_percentage),
+                    visceral_fat: parseFloat(body.visceral_fat),
+                    bmi: parseFloat(body.bmi),
+                    metabolism: parseInt(body.metabolism),
+                    muscle_percentage: parseFloat(body.muscle_percentage),
+                    body_age: parseInt(body.body_age),
                     updated_on: now,
-                    recorded_date: body.recorded_date,
-                    deleted: false
+                    recorded_date: Date(body.recorded_date)
                 }
             })
             .then(result => {
@@ -373,6 +443,97 @@ router.delete('/records/:id',
             })
     }
 )
+
+router.post('/photo', uploadPhoto.single('image-file'),
+    (req, res) => {
+        console.info('Files', req.file);
+        console.info('Body', req.body['custId']);
+        res.on('finish', () => {
+            fs.unlink(req.file.path, err => { });
+        })
+
+        const custId = req.body.custId;
+        const now = '' + (new Date()).getTime();
+
+        fs.readFile(req.file.path,
+            (err, imgFile) => {
+                const params = {
+                    Bucket: 'fitness',
+                    Key: `${custId}/${req.file.filename}`,
+                    Body: imgFile,
+                    ACL: 'public-read',
+                    ContentType: req.file.mimetype,
+                    Metadata: {
+                        update: now
+                    }
+                };
+
+                s3.putObject(params, (err, result) => {
+                    if (err)
+                        return res.status(500).json({
+                            message: 'upload photo error',
+                            url: req.originalUrl,
+                            status: 500
+                        })
+
+                    client.db('fitness').collection('customers').updateOne(
+                        {
+                            _id: ObjectId(custId)
+                        },
+                        {
+                            $push: {
+                                images: {
+                                    filename: req.file.filename,
+                                    path: `${custId}/${req.file.filename}`,
+                                    uploaded_on: now
+                                }
+                            }
+                        }
+                    )
+                        .then(result => {
+                            res.status(200).json({
+                                filename: req.file.filename
+                            })
+                        })
+                        .catch(err => {
+                            res.status(500).json({
+                                message: 'delete error',
+                                url: req.originalUrl,
+                                status: 500
+                            })
+                        })
+                })
+            })
+    }
+)
+
+router.get('/photo', (req, res) => {
+    const filepath = req.query.path;
+    console.log('Filepath: ', filepath);
+
+    const params = {
+        Bucket: 'fitness',
+        Key: filepath
+    }
+    s3.getObject(params, (err, imageFile) => {
+        console.log('Image File: ', imageFile);
+        res.status(200).type(imageFile.ContentType).send(imageFile.Body);
+    })
+    // http.get(`https://fitness.sgp1.digitaloceanspaces.com/${filepath}`)
+    //     .then(result => {
+    //         console.log('image data: ', result);
+    //         res.status(200).send(result);
+    //     })
+    //     .catch(err => {
+    //         res.status(500).json({
+    //             message: 'get image error',
+    //             url: req.originalUrl,
+    //             status: 500
+    //         })
+    //     })
+})
+
+
 
 //-----------------------------
 // Connections

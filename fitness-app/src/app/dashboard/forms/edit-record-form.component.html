@@ -1,0 +1,71 @@
+<div class="container">
+    <div class="title-container">
+        <h2 mat-dialog-title>Edit Record</h2>
+        <!-- <button mat-fab-mini-button>
+                        <mat-icon>clear</mat-icon>
+                    </button> -->
+    </div>
+
+    <form #recordForm="ngForm" (ngSubmit)="processForm(recordForm)">
+        <div class="box-2">
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>Weight (kg)</mat-label>
+                <input matInput type="number" required placeholder="Weight" name="weight" [(ngModel)]="data.weight">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>Fat (%)</mat-label>
+                <input matInput type="number" required placeholder="Fat percentage %" name="fat_percentage"
+                    [(ngModel)]="data.fat_percentage">
+            </mat-form-field>
+        </div>
+
+        <div class="box-2">
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>Resting Metabolism (kcal)</mat-label>
+                <input matInput type="number" required placeholder="Metabolism" name="metabolism"
+                    [(ngModel)]="data.metabolism">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="standard" required>
+                <mat-label>Visceral Fat</mat-label>
+                <input matInput type="number" required placeholder="Visceral Fat" name="visceral_fat"
+                    [(ngModel)]="data.visceral_fat">
+            </mat-form-field>
+        </div>
+
+        <div class="box-2">
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>BMI</mat-label>
+                <input matInput type="number" required placeholder="BMI" name="bmi" [(ngModel)]="data.bmi">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>Skeletal Muscle (%)</mat-label>
+                <input matInput type="number" required placeholder="Skeletal muscle" name="muscle_percentage"
+                    [(ngModel)]="data.muscle_percentage">
+            </mat-form-field>
+        </div>
+
+        <div class="box-2">
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>Body Age</mat-label>
+                <input matInput type="number" placeholder="Body age" name="body_age" [(ngModel)]="data.body_age">
+            </mat-form-field>
+
+            <mat-form-field floatLabel="always" appearance="standard">
+                <mat-label>S3 Score</mat-label>
+                <input matInput type="number" placeholder="S3 Score" name="carotenoid" [(ngModel)]="data.carotenoid">
+            </mat-form-field>
+        </div>
+
+        <div class="btn-box">
+            <button class="btn-submit" mat-raised-button color="primary" type="submit">Update
+                Record</button>
+        </div>
+
+        <div class="btn-box">
+            <button class="btn-submit" mat-button color="accent" type="reset">Reset Form</button>
+        </div>
+    </form>
+</div>

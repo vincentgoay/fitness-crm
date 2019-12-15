@@ -1,0 +1,59 @@
+.container {
+    box-sizing: content-box;
+    border: 0.5px solid lightgray;
+    box-shadow: 2px 4px 8px 0px gray;
+    border-radius: 10px;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* mat-list {
+    box-sizing: border-box;
+    border: 0.5px solid lightgray;
+    box-shadow: 2px 4px 8px 0px gray ;
+} */
+
+.list-standard-row {
+    display: inline-flex;
+    width: 100vw;
+    justify-content: space-between;
+    align-items: center;
+    height: 48px;
+}
+
+.list-standard-row div {
+    display: block;
+}
+
+.pad-left {
+    padding-left: 1rem;
+}
+
+.pad-right {
+    padding-right: 1rem;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 18px;
+    padding: 1rem;
+}
+
+.label {
+    color: gray;
+    font-size: 12px;
+}
+
+.value {
+    color: #0c0c0c;
+    font-size: 14px;
+}
+
+mat-grid-tile {
+    box-sizing: border-box;
+    border: 1px lightgray solid;
+}

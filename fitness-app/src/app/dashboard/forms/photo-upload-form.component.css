@@ -1,0 +1,33 @@
+.container {
+    padding: 0.5rem 1rem;
+}
+
+.box-2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-field {
+    height: 80px;
+}
+
+.btn-box {
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+.btn-submit {
+    align-items: center;
+    width: 80%!important;
+    min-width: unset!important;
+}
+
+mat-form-field {
+    display: block;
+}
+
+mat-radio-button {
+    padding: 0.5rem;
+}

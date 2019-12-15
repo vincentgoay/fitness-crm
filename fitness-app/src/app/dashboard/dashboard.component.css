@@ -1,0 +1,49 @@
+.nav-title {
+    padding-left: 8px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+mat-sidenav-content {
+    padding-top: 56px;
+}
+
+mat-sidenav-container {
+    height: 100vh;
+    /* z-index: inherit; */
+}
+
+mat-sidenav {
+    top: 56px;
+    max-width: 80vw;
+    min-width: 10rem;
+}
+
+.toolbar {
+    position: fixed;
+    z-index: 2;
+}
+
+.btn-box {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 10;
+    padding: 1rem;
+}
+
+.mat-menu-item {
+    /* padding: 0 1rem; */
+    margin: 0.5rem 0;
+    background-color: transparent;;
+    color: #3F51B5;
+    text-align: center;
+}

@@ -1,0 +1,104 @@
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.record-row-container {
+    display: flex;
+    /* flex-direction: column; */
+    flex-wrap: column wrap;
+    justify-content: space-around;
+    height: 100px;
+    width: 100vw;
+    /* align-items: stretch; */
+
+}
+
+.pad-left {
+    padding-left: 1rem;
+}
+
+.pad-right {
+    padding-right: 1rem;
+}
+
+.title-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-standard-row {
+    display: inline-flex;
+    width: 100vw;
+    justify-content: space-between;
+    align-items: center;
+    height: 48px;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 18px;
+    padding: 4px;
+}
+
+.label {
+    color: gray;
+    font-size: 12px;
+}
+
+.label-sm {
+    color: gray;
+    font-size: 12px;
+}
+
+.value {
+    color: #0c0c0c;
+    font-size: 14px;
+}
+
+.value-lg {
+    color: #0c0c0c;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+mat-nav-list {
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: lightgrey 0.5px solid;
+}
+
+.row-cell-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    width: inherit;
+    height: max-content;
+    /* border: chartreuse 1px solid; */
+    padding: 4px 0;
+} 
+
+.info-box {
+    flex-direction: column;
+    flex: 1 1 auto;
+    width: 15vw;
+    padding: 4px 8px;
+}
+
+.info-box div {
+    text-align: center;
+}
+
+.label-section {
+    flex: 7 1 auto;
+}
+
+.label-section-box {
+    width: fit-content;
+}
+
+a:hover {
+    background-color: lightgray;
+}

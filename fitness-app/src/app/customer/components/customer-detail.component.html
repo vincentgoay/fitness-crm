@@ -1,0 +1,16 @@
+<div>
+    <mat-tab-group class="tab-container" #tabGroup mat-align-tabs="center" mat-stretch-tabs animationDuration="300ms"
+        (selectedTabChange)="reloadTab(tabGroup.selectedIndex)">
+        <mat-tab label="Overview">
+            <div *ngIf="customer">
+                <app-customer-detail-overview (reloadDataEvent)="reloadData()" [customer]="customer"></app-customer-detail-overview>
+            </div>
+        </mat-tab>
+
+        <mat-tab label="Records">
+            <div *ngIf="records">
+                <app-customer-detail-records [records]="records"></app-customer-detail-records>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>

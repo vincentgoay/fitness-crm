@@ -1,0 +1,53 @@
+
+mat-nav-list {
+    box-sizing: border-box;
+    border: 0.5px solid lightgray;
+    box-shadow: 2px 4px 8px 0px gray ;
+}
+
+.btn-box {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1;
+    padding: 1rem;
+}
+
+.pad-left {
+    padding-left: 1rem;
+}
+
+.list-container {
+    display: flex;
+    width: 100%;
+}
+
+#c-detail {
+    padding-left: 1rem;
+}
+
+#c-status, #c-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.fx-grow-3 {
+    width: 60vw;
+}
+
+.fx-grow-1 {
+    /* width: 40px; */
+    flex-grow: 1;
+}
+
+.fx-dir-row {
+    display: flex;
+    flex-direction: row;
+}
+
+.fx-dir-col {
+    display: flex;
+    flex-direction: column;
+}

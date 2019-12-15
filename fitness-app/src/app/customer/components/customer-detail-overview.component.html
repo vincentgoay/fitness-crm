@@ -1,0 +1,61 @@
+<div class="title-container pad-left pad-right">
+    <div class="title">Customer Details</div>
+    <button (click)="editCustomerDetail()" mat-icon-button color="primary">
+        <mat-icon>edit</mat-icon>
+    </button>
+</div>
+
+<div class="container">
+    <div class="list-standard-row">
+        <div class="label pad-left">Name</div>
+        <div class="value pad-right">{{ customer.name }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Birth Year</div>
+        <div class="value pad-right">{{ customer.birth_year }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Gender</div>
+        <div class="value pad-right">{{ customer.gender }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Phone</div>
+        <div class="value pad-right">{{ customer.phone }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Height</div>
+        <div class="value pad-right">{{ customer.height }} cm</div>
+    </div>
+    <mat-divider></mat-divider>
+</div>
+
+<div style="height: 1rem; background-color: #3F51B5;"></div>
+
+<div class="title-container pad-left pad-right">
+    <div class="title">Progress</div>
+</div>
+
+<div class="container">
+    <!-- Display chart -->
+</div>
+
+<div style="height: 1rem; background-color: #3F51B5;"></div>
+
+<div class="title-container pad-left pad-right">
+    <div class="title">Gallery</div>
+</div>
+
+<div class="container">
+    <!-- Display Image in Grid -->
+    <mat-grid-list cols="3">
+        <mat-grid-tile *ngFor="let image of customer.images">
+            <img src="http://localhost:3000/protected/photo?path={{image.path}}" 
+            style="object-fit: cover;" width="100%" height="100%">
+        </mat-grid-tile>
+
+    </mat-grid-list>
+</div>

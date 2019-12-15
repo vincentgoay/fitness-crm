@@ -1,0 +1,39 @@
+<div class="title-container pad-left pad-right">
+    <div class="title">Records</div>
+    <!-- <button mat-icon-button color="primary">
+        <mat-icon>edit</mat-icon>
+    </button> -->
+</div>
+
+<mat-nav-list *ngIf="records && records.length > 0">
+    <a  routerLink="{{ r._id }}" *ngFor="let r of records; let i = index;">
+        <div class="row-cell-container">
+            <div class="info-box label-section">
+                <div class="label-section-box">
+                    <div class="label-sm">Record</div>
+                    <div class="value-lg">{{ records.length - i }}</div>
+                    <div class="label-sm">2019/09/28</div>
+                </div>
+            </div>
+
+            <div class="info-box weight-section">
+                <div class="label-sm">Weight</div>
+                <div class="value-lg">{{ r.weight }}</div>
+                <div class="label-sm">kg</div>
+            </div>
+
+            <div class="info-box fat-section">
+                <div class="label-sm">Fat</div>
+                <div class="value-lg">{{ r.fat_percentage }}</div>
+                <div class="label-sm">%</div>
+            </div>
+
+            <div class="info-box muscle-section">
+                <div class="label-sm">Muscle</div>
+                <div class="value-lg">{{ r.muscle_percentage }}</div>
+                <div class="label-sm">%</div>
+            </div>
+        </div>
+        <mat-divider></mat-divider>
+    </a>
+</mat-nav-list>

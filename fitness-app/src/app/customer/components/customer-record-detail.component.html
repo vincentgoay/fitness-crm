@@ -1,0 +1,51 @@
+<div class="title-container pad-left pad-right">
+    <div class="title">Records</div>
+    <button (click)="editRecord()" mat-icon-button>
+        <mat-icon>edit</mat-icon>
+    </button>
+</div>
+
+<div class="container" *ngIf="record != null">
+    <div class="list-standard-row">
+        <div class="label pad-left">Weight</div>
+        <div class="value pad-right">{{ record.weight | number:'1.1-1' }} kg</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">BMI</div>
+        <div class="value pad-right">{{ record.bmi | number:'1.1-1' }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Skeletal Muscle</div>
+        <div class="value pad-right">{{ record.muscle_percentage | number:'1.1-1' }} %</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Body Fat</div>
+        <div class="value pad-right">{{ record.fat_percentage | number:'1.1-1' }} %</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Visceral Fat</div>
+        <div class="value pad-right">{{ record.visceral_fat | number:'1.1-1' }}</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Basal Metabolic Rate</div>
+        <div class="value pad-right">{{ record.metabolism }} kcal/day</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Body Age</div>
+        <div class="value pad-right">{{ record.body_age }} yrs old</div>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="list-standard-row">
+        <div class="label pad-left">Skin Carotenoid Score (S3)</div>
+        <div class="value pad-right">{{ record.carotenoid }}</div>
+    </div>
+    <mat-divider></mat-divider>
+</div>
+
+<div style="height: 1rem; background-color: #3F51B5;"></div>
