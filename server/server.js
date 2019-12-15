@@ -25,13 +25,26 @@ app.use(cors());
 //-----------------------------
 
 // login router - handle all login requests
-app.use('/auth', auth)
+app.use('api/auth', auth)
 
 // handle all protected request
-app.use('/protected', user.router)     // TODO: Check credential before allowing access
+app.use('api/protected', user.router)     // TODO: Check credential before allowing access
 
 // handle all member request
 // app.use('/members', member)
+
+// Serve angular application from Server side
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// Response 404 in JSON
+// This should be the last in order that capture anything undefine.
+// Normal practise is to either return 404 or index.html 
+// app.use((req, resp) => {
+//     resp.status(404).type('application/json')
+//         .json({
+//             message: 'Page Not Found'
+//         })
+// })
 
 //-----------------------------
 // Starting up application

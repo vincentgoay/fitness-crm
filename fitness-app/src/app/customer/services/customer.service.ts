@@ -16,17 +16,17 @@ export class CustomerService {
   ) { }
 
   getCustomers(): Promise<Customer[]> {
-    return this.http.get<Customer[]>('http://localhost:3000/protected/customers').toPromise();
+    return this.http.get<Customer[]>('api/protected/customers').toPromise();
   }
 
   getCustomersOb(): Observable<Customer[]> {
     return (
-      this.http.get<Customer[]>('http://localhost:3000/protected/customers')
+      this.http.get<Customer[]>('api/protected/customers')
     )
   }
 
   getCustomer(cid: string): Promise<Customer> {
-    return this.http.get<Customer>(`http://localhost:3000/protected/customers/${cid}`).toPromise();
+    return this.http.get<Customer>(`api/protected/customers/${cid}`).toPromise();
   }
 
   addCustomer(cust: Customer): Promise<any> {
@@ -41,13 +41,13 @@ export class CustomerService {
       .set('gender', cust.gender)
 
     return (
-      this.http.post<any>(`http://localhost:3000/protected/customer`, params.toString(), { headers }).toPromise()
+      this.http.post<any>(`api/protected/customer`, params.toString(), { headers }).toPromise()
     )
   }
 
   deleteCustomer(custId: string): Promise<any> {
     return (
-      this.http.delete<any>(`http://localhost:3000/protected/customers/${custId}`).toPromise()
+      this.http.delete<any>(`api/protected/customers/${custId}`).toPromise()
     )
   }
 
@@ -64,16 +64,16 @@ export class CustomerService {
       .set('gender', cust.gender)
 
     return (
-      this.http.put<any>(`http://localhost:3000/protected/customers/${cust._id}`, params.toString(), { headers }).toPromise()
+      this.http.put<any>(`api/protected/customers/${cust._id}`, params.toString(), { headers }).toPromise()
     )
   }
 
   getRecords(): Promise<Record[]> {
-    return this.http.get<Record[]>('http://localhost:3000/protected/records').toPromise();
+    return this.http.get<Record[]>('api/protected/records').toPromise();
   }
 
   getRecord(rid: string): Promise<Record> {
-    return this.http.get<Record>(`http://localhost:3000/protected/records/${rid}`).toPromise();
+    return this.http.get<Record>(`api/protected/records/${rid}`).toPromise();
   }
 
   addRecord(record: Record): Promise<any> {
@@ -92,7 +92,7 @@ export class CustomerService {
       .set('carotenoid', record.carotenoid.toString())
 
     console.info('Record data to be added: ', params);
-    return this.http.post<any>('http://localhost:3000/protected/record', params, { headers }).toPromise()
+    return this.http.post<any>('api/protected/record', params, { headers }).toPromise()
   }
 
   updateRecord(record: Record): Promise<any> {
@@ -111,7 +111,7 @@ export class CustomerService {
       .set('carotenoid', record.carotenoid ? record.carotenoid.toString() : '')
 
     return (
-      this.http.put<any>(`http://localhost:3000/protected/records/${record._id}`, params.toString(), { headers }).toPromise()
+      this.http.put<any>(`api/protected/records/${record._id}`, params.toString(), { headers }).toPromise()
     )
   }
 
@@ -121,7 +121,7 @@ export class CustomerService {
       .set('Content-Type', 'multipart/form-data')
 
     return (
-      this.http.post<any>('http://localhost:3000/protected/photo', data).toPromise()
+      this.http.post<any>('api/protected/photo', data).toPromise()
     )
   }
 

@@ -7,7 +7,6 @@ use fitness;
 drop table if exists users;
 
 create table users(
-    id int not null auto_increment,
     email varchar(128) not null,
     username varchar(64) not null,
     display_name varchar(128),
@@ -15,7 +14,7 @@ create table users(
     setting_id int not null,
     created_at timestamp default current_timestamp,
 
-    primary key (username)
+    primary key (email)
 );
 
 create table settings(

@@ -12,7 +12,7 @@ const AWS = require('aws-sdk');
 const express = require('express');
 const router = express.Router();
 
-const config = require('../config');
+// const config = require('./config');
 const db = require('../utils/mysql_utils');
 
 //-----------------------------
@@ -25,24 +25,92 @@ const urlencoded = express.urlencoded({ extended: true });
 const uploadPhoto = multer({ dest: __dirname + '/tmp' });
 
 // MySQL
-const pool = mysql.createPool(config.mysql);
+// let do_config;
+// if (fs.existsSync(__dirname + '../config.js')) {
+//     // Use local config file
+//     do_config = require(__dirname + '../config').digitalocean;
+//     do_config.ssl = {
+//         ca: fs.readFileSync(do_onfig.digitalocean.cacert)
+//     };
+// } else {
+//     // Use cloud config file
+//     do_config = {
+//         host: 'db-mysql-sgp1-85311-do-user-6881958-0.db.ondigitalocean.com',
+//         port: process.env.DB_PORT,
+//         user: process.env.DB_USER,
+//         password: process.env.DB_PASSWORD,
+//         database: 'fitness',
+//         connectionLimit: 4,
+//         cacert: process.env.DB_CA_CERT
+//     };
+// }
+// const do_config = {
+//     host: config.digitalocean.host,
+//     user: config.digitalocean.username,
+//     password: config.digitalocean.password,
+//     database: config.digitalocean.database,
+//     connectionLimit: 4,
+//     ssl: {
+//         ca: fs.readFileSync(config.digitalocean.cacert)
+//     }
+// }
 
+
+// AWS S3
+console.log('Dir Name', __dirname + '/config.js');
+let do_config, s3_config, mo_config;
+if (fs.existsSync(__dirname + '/config.js')) {
+    do_config = require('./config').digitalocean;
+    do_config.ssl = {
+        ca: fs.readFileSync(do_config.cacert)
+    };
+
+    s3_config = require('./config.js').s3;
+
+    mo_config = require('./config.js').atlas;
+} else {
+    do_config = {
+        host: 'db-mysql-sgp1-85311-do-user-6881958-0.db.ondigitalocean.com',
+        port: process.env.DB_PORT,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: 'fitness',
+        connectionLimit: 4,
+        cacert: process.env.DB_CA_CERT
+    };
+
+    s3_config = {
+        accessKeyId: process.env.S3_ACCESS_KEY,
+        secretAccessKey: process.env.S3_SECRET_KEY
+    }
+
+    mo_config = {
+        url: process.env.ATLAS_URL
+    } 
+}
+
+// MySQL client
+console.log('Do Config:', do_config);
+console.log('S3 Config:', s3_config);
+console.log('At Config:', mo_config);
+
+const pool = mysql.createPool(do_config);
+const SPACE_URL = 'sgp1.digitaloceanspaces.com';
+// S3 client
+const s3 = new AWS.S3({
+    endpoint: new AWS.Endpoint(SPACE_URL),
+    accessKeyId: s3_config.public,
+    secretAccessKey: s3_config.secret
+});
+// Mongo Client
+const client = new MongoClient(mo_config.url, { useUnifiedTopology: true });
+
+// MYSQL
 const GET_ALL_USERS = `select * from users`;
 const FIND_USER = `select * from users where email = ?`;
 
 const getAllUsers = db.mkQueryFromPool(db.mkQuery(GET_ALL_USERS), pool);
 const findUser = db.mkQueryFromPool(db.mkQuery(FIND_USER), pool);
-
-// Mongo Client
-const client = new MongoClient(config.mongodb.url, { useUnifiedTopology: true });
-
-// AWS S3
-const endpoint = new AWS.Endpoint(config.s3.endpoint);
-const s3 = new AWS.S3({
-    endpoint: endpoint,
-    accessKeyId: config.s3.accessKeyId || process.env.S3_ACCESS_KEY,
-    secretAccessKey: config.s3.secretAccessKey || process.env.S3_SECRET_ACCESS_KEY
-})
 
 //-----------------------------
 // Router rules
@@ -507,6 +575,7 @@ router.post('/photo', uploadPhoto.single('image-file'),
     }
 )
 
+// Retrieve photo from s3
 router.get('/photo', (req, res) => {
     const filepath = req.query.path;
     console.log('Filepath: ', filepath);
@@ -548,8 +617,10 @@ const poolConn = () => {
                         reject(err)
                     }
                     conn.ping(err => {
-                        if (err)
+                        if (err) {
+                            console.error('Cannot ping database: ', err);
                             return reject(err);
+                        }
                         resolve();
                     })
                 })

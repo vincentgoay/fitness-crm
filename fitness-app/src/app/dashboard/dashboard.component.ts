@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild('snav', { static: true }) sidenavRef: MatSidenav;
   @Output() reloadCustomerListEvent = new EventEmitter();
 
-  private _selectedMenuIndex: number;
+  private _selectedMenuIndex: number = 0;
   get selectedMenuIndex(): number {
     return this._selectedMenuIndex;
   }
