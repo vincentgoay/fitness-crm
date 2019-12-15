@@ -57,13 +57,13 @@ const uploadPhoto = multer({ dest: __dirname + '/tmp' });
 
 
 // AWS S3
-console.log('Dir Name', __dirname + '/config.js');
 let do_config, s3_config, mo_config;
 if (fs.existsSync(__dirname + '/config.js')) {
-    do_config = require('./config').digitalocean;
-    do_config.ssl = {
-        ca: fs.readFileSync(do_config.cacert)
-    };
+    do_config = require('./config').mysql
+    // do_config = require('./config').digitalocean;
+    // do_config.ssl = {
+    //     ca: fs.readFileSync(do_config.cacert)
+    // };
 
     s3_config = require('./config.js').s3;
 
@@ -95,8 +95,8 @@ console.log('S3 Config:', s3_config);
 console.log('At Config:', mo_config);
 
 const pool = mysql.createPool(do_config);
-const SPACE_URL = 'sgp1.digitaloceanspaces.com';
 // S3 client
+const SPACE_URL = 'sgp1.digitaloceanspaces.com';
 const s3 = new AWS.S3({
     endpoint: new AWS.Endpoint(SPACE_URL),
     accessKeyId: s3_config.public,
